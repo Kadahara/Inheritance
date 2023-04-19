@@ -1,5 +1,12 @@
 #include<iostream>
 #include<string>
+
+#define delimiter "----------------------------------------------------------------"
+
+#define HUMEN_TAKE_PARAMETERS const std::string& last_name, const std::string& first_name, unsigned int age
+#define HUMEN_GIVE_PARAMETERS last_name, first_name, age
+
+
 using namespace std;
 using std::cin;
 using std::cout;
@@ -36,23 +43,26 @@ public:
 		this->age = age;
 	}
 	//			constructors;
-	Human(const std::string& last_name, const std::string& first_name, unsigned int age)
+	Human(HUMEN_TAKE_PARAMETERS)
 	{
 		set_last_name(last_name);
 		set_first_name(first_name);
 		set_age(age);
 		cout << "Hconstructor:\t" << this << endl;
 	}
-	~Human()
+	virtual ~Human()
 	{
 		cout << "HDestructor:\t" << this << endl;
 	}
-	void info()const
+	virtual void info()const
 	{
 		cout << last_name << " " << first_name << " " << age << " y/o " << endl;
 	}
 
 };
+#define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
+#define STUDENT_GIVE_PARAMETERS speciality, group, rating, attendance
+
 class Student : public Human
 {
 	std::string speciality;
@@ -95,9 +105,8 @@ public:
 	//		конструктор
 	Student
 	(
-		const std::string& last_name, const std::string& first_name, unsigned int age,
-		const std::string& speciality, const std::string& group, double rating, double attendance
-	) : Human(last_name, first_name,age)
+		HUMEN_TAKE_PARAMETERS,STUDENT_TAKE_PARAMETERS
+	) : Human(HUMEN_GIVE_PARAMETERS)
 	{
 		set_speciality(speciality);
 		get_group(group);
@@ -116,6 +125,10 @@ public:
 	}
 
 };
+
+#define TEACHER_TAKE_PARAMETERS const std::string& post
+#define TEACHER_GIVE_PARAMETERS post
+
 class Teacher :public Human
 {
 	std::string post;
@@ -131,9 +144,8 @@ public:
 	//				Constructor
 	Teacher
 		(
-			const std::string& last_name, const std::string& first_name, unsigned int age,
-			const std::string& post
-		) : Human(last_name, first_name, age)
+			HUMEN_TAKE_PARAMETERS,TEACHER_TAKE_PARAMETERS
+		) : Human(HUMEN_GIVE_PARAMETERS)
 	{
 		set_post(post);
 		cout << "TConstructor:\t" << this << endl;
@@ -148,6 +160,9 @@ public:
 		cout << " " << " subject " << post << endl;
 	}
 };
+
+#define GRADUATE_TAKE_PARAMETERS const std::string& diplom
+#define GRADUATE_GIVE_PARAMETERS diplom
 class Graduate :public Student
 {
 	std::string diplom;
@@ -162,10 +177,8 @@ public:
 	}
 	//				Constructor
 	Graduate
-	(	const std::string& last_name, const std::string& first_name, unsigned int age,
-		const std::string& speciality, const std::string& group, double rating, double attendance,
-		const std::string& diplom
-	) : Student(last_name, first_name, age ,speciality, group, rating, attendance)
+	(HUMEN_TAKE_PARAMETERS,STUDENT_TAKE_PARAMETERS,GRADUATE_TAKE_PARAMETERS
+	) : Student(HUMEN_GIVE_PARAMETERS, STUDENT_GIVE_PARAMETERS)
 	{
 		set_diplom(diplom);
 		cout << "TConstructor:\t" << this << endl;
@@ -181,13 +194,34 @@ public:
 	}
 };
 
+//#define INHERITANCE
 
 void main()
 {
 	setlocale(LC_ALL, "");
-	/*Human human("Тупенко", "Василий", 18);
-	human.info();*/
 
-	Student stud("Pinkman", "Jessie", 25, "Chemistry", "WW_220", 95, 99);
-	stud.info();
+
+#ifdef INHERITANCE
+	/*Human human("Тупенко", "Василий", 18);
+human.info();*/
+
+	Graduate Grad("Pinkman", "Jessie", 25, "Chemistry", "WW_220", 95, 99, "WEB-IT");
+	Grad.info();
+#endif // INHERITANCE
+	Human* group[] =
+	{
+		new Student("Pinkman", "Jessie", 25, "Chemistry", "WW_220", 90, 87),
+		new Teacher("Pasha", "White", 50, "Chemistry"),
+		new Graduate("Ivan", "Urgant", 37, "Criminalistic", "OBN", 95, 90, "How to catch Heizenberg")
+	};
+	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
+	{
+		group[i]->info();
+		cout << delimiter << endl;
+	}
+	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
+	{
+		delete group[i];
+	}
+
 }
